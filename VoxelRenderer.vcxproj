@@ -132,7 +132,26 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\alexa\Downloads\VoxelEngine2-master\VoxelEngine2-master\VoxelEngine\src\Headers\Camera.hpp" />
+    <ClInclude Include="Headers\Shaders\AddVoxels_comp.h" />
+    <ClInclude Include="Headers\Shaders\Bloom_frag.h" />
+    <ClInclude Include="Headers\Shaders\Blur_frag.h" />
+    <ClInclude Include="Headers\Shaders\Blur_H_frag.h" />
+    <ClInclude Include="Headers\Shaders\Blur_V_frag.h" />
+    <ClInclude Include="Headers\Shaders\CapsuleEdit_comp.h" />
+    <ClInclude Include="Headers\Shaders\CubeEdit_comp.h" />
+    <ClInclude Include="Headers\Shaders\CylinderEdit_comp.h" />
+    <ClInclude Include="Headers\Shaders\DeleteVoxels_comp.h" />
+    <ClInclude Include="Headers\Shaders\InitVoxels_comp.h" />
+    <ClInclude Include="Headers\Shaders\Model_comp.h" />
+    <ClInclude Include="Headers\Shaders\Particles_comp.h" />
+    <ClInclude Include="Headers\Shaders\Particles_frag.h" />
+    <ClInclude Include="Headers\Shaders\Particles_vert.h" />
+    <ClInclude Include="Headers\Shaders\postProcessing_frag.h" />
+    <ClInclude Include="Headers\Shaders\postProcessing_vert.h" />
+    <ClInclude Include="Headers\Shaders\SetSubChunks_comp.h" />
+    <ClInclude Include="Headers\Shaders\SphereEdit_comp.h" />
+    <ClInclude Include="Headers\Shaders\voxel_frag.h" />
+    <ClInclude Include="Headers\Shaders\voxel_vert.h" />
     <ClInclude Include="Headers\VoxelRenderer.hpp" />
   </ItemGroup>
   <ItemGroup>
