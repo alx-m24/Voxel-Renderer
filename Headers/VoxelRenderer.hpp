@@ -4,11 +4,14 @@
 #include <Shader/ComputeShader.hpp>
 #include <Utils/FrameBuffer.hpp>
 #include <Renderer/Renderer.hpp>
+#include <Settings/Settings.hpp>
 #include <Shader/Shader.hpp>
 #include <Camera/Camera.hpp>
 #include <Utils/SSBO.hpp>
 
 #include <glm/glm.hpp>
+
+#include <array>
 
 namespace Lexvi {
 	namespace Extensions {
@@ -42,6 +45,7 @@ namespace Lexvi {
 				};
 
 			private:
+				Shader blurShader{};
 				Shader voxelShader{};
 				Shader PostProcessingShader{};
 
@@ -52,11 +56,28 @@ namespace Lexvi {
 				SSBO emptyChunkSSBO{};
 
 				FrameBuffer voxelFrameBuffer{};
+				std::array<FrameBuffer, 2> pingpongFBO;
 				Quad FrameOutput{};
 
 				Fog fog{};
 
 				ViewingMode viewingMode = RENDER;
+
+				std::vector<uint32_t> filledSubchunks;
+
+			public:
+				Setting<bool> ShadowEnabled = true;
+				Setting<float> ShadowDist = 100.0f;
+				Setting<float> ShadowFar = 100.0f;
+
+				Setting<bool> enableReflections = false;
+				Setting<float> reflectionFar = 100.0f;
+				Setting<int> maxReflectionNum = 2;
+
+				Setting<bool> enableTransparency = false;
+				Setting<int> maxTransparencyNum = 2;
+
+				Setting<int> multipleLights = 0;
 
 			private:
 				size_t voxelNum = 0;
@@ -76,13 +97,13 @@ namespace Lexvi {
 
 			public:
 				VoxelRenderer() = default;
-				VoxelRenderer(glm::vec3 chunkNum, glm::uvec3 chunkDimensions, float chunkSize);
-				VoxelRenderer(glm::vec3 chunkNum, glm::uvec3 chunkDimensions, float chunkSize, const std::vector<Voxel>& voxels);
+				VoxelRenderer(glm::uvec3 chunkNum, glm::uvec3 chunkDimensions, float chunkSize);
+				VoxelRenderer(glm::uvec3 chunkNum, glm::uvec3 chunkDimensions, float chunkSize, const std::vector<Voxel>& voxels);
 
 			public:
 				// Initializes the voxel grid
-				void Init(glm::vec3 chunkNum, glm::uvec3 chunkDimensions, float chunkSize);
-				void Init(glm::vec3 chunkNum, glm::uvec3 chunkDimensions, float chunkSize, const std::vector<Voxel>& voxels);
+				void Init(glm::uvec3 chunkNum, glm::uvec3 chunkDimensions, float chunkSize);
+				void Init(glm::uvec3 chunkNum, glm::uvec3 chunkDimensions, float chunkSize, const std::vector<Voxel>& voxels);
 
 				void UpdateVoxel(Voxel voxel);
 				void UpdateAllVoxels(const std::vector<Voxel>& voxels);
@@ -96,7 +117,7 @@ namespace Lexvi {
 
 				void Draw(const Camera& camera, Renderer& renderer);
 
-				void OnResize(float width, float height);
+				void OnResize(unsigned int width, unsigned int height);
 
 			public:
 				uint32_t flattenIndex(VoxelIndex index) const;
@@ -113,6 +134,10 @@ namespace Lexvi {
 
 				void InitShaders();
 				void InitBuffers();
+				void InitSettings();
+
+				void UpdateSubChunks();
+				void UpdateSubChunk(uint32_t chunkIndex);
 			};
 		}
 	}

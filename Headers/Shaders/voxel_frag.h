@@ -1,4 +1,4 @@
-const char* voxel_frag =
+inline static constexpr const char* voxel_frag =
 "#version 430 core\n"
 "\n"
 "layout (location = 0) out vec4 fragColor;\n"
@@ -638,6 +638,6 @@ const char* voxel_frag =
 "    else\n"
 "        BrightColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
 "\n"
-"    gl_FragDepth = minDist / far;\n"
+"    gl_FragDepth = clamp(minDist / far, 0.0, 1.0 - error_padding);\n"
 "}\n"
 ;
