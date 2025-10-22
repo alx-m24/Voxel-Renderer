@@ -231,6 +231,10 @@ void Lexvi::Extensions::VoxelRenderer::VoxelRenderer::SetViewingMode(ViewingMode
 
 void VoxelRenderer::Draw(const Camera& camera, Renderer& renderer)
 {
+	BindSSBO(voxelSSBO);
+	BindSSBO(chunkSSBO);
+	BindSSBO(emptyChunkSSBO);
+
 	voxelShader.use();
 	voxelShader.setVec3("uOrigin", camera.getPosition());
 	voxelShader.setVec3("uRight", camera.getRight());
