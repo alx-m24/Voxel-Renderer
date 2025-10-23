@@ -111,10 +111,9 @@ void VoxelRenderer::UpdateSubChunks() {
 		uint32_t offsetBytes = static_cast<uint32_t>(i * subDivisionCount  * sizeof(uint32_t));
 
 		UpdateSSBO(emptyChunkSSBO, filledSubchunks.data(), subDivisionCount * sizeof(uint32_t), offsetBytes);
-		glDispatchCompute(
-			chunkDimensions.x / 8,
+		SetSubChunksShader.Dispatch(glm::uvec3(chunkDimensions.x / 8,
 			chunkDimensions.y / 8,
-			chunkDimensions.z / 8);
+			chunkDimensions.z / 8));
 	}
 }
 
@@ -123,10 +122,9 @@ void VoxelRenderer::UpdateSubChunk(uint32_t chunkIndex) {
 	uint32_t offsetBytes = static_cast<uint32_t>(chunkIndex * subDivisionCount * sizeof(uint32_t));
 
 	UpdateSSBO(emptyChunkSSBO, filledSubchunks.data(), subDivisionCount * sizeof(uint32_t), offsetBytes);
-	glDispatchCompute(
-		chunkDimensions.x / 8,
+	SetSubChunksShader.Dispatch(glm::uvec3(chunkDimensions.x / 8,
 		chunkDimensions.y / 8,
-		chunkDimensions.z / 8);
+		chunkDimensions.z / 8));
 }
 
 void VoxelRenderer::Init(glm::uvec3 chunkNum, glm::uvec3 chunkDimensions, float chunkSize)
@@ -197,6 +195,17 @@ void VoxelRenderer::UpdateAllVoxels(const std::vector<Voxel>& voxels)
 	}
 
 	SendAllData(packedVoxels);
+
+	UpdateSubChunks();
+}
+
+void Lexvi::Extensions::VoxelRenderer::VoxelRenderer::UpdateAllVoxels(const SSBO& input)
+{
+	if (input.size != voxelSSBO.size)
+		throw std::runtime_error("Mismatched SSBO sizes in UpdateAllVoxels");
+
+
+	glCopyNamedBufferSubData(input.id, voxelSSBO.id, 0, 0, input.size);
 
 	UpdateSubChunks();
 }

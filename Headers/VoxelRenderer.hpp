@@ -107,6 +107,8 @@ namespace Lexvi {
 
 				void UpdateVoxel(Voxel voxel);
 				void UpdateAllVoxels(const std::vector<Voxel>& voxels);
+				// Updates all voxels using an input SSBO
+				void UpdateAllVoxels(const SSBO& input);
 
 				void ClearVoxel(Voxel voxel);
 				void ClearAllVoxels();
