@@ -207,6 +207,10 @@ void Lexvi::Extensions::VoxelRenderer::VoxelRenderer::UpdateAllVoxels(const SSBO
 
 	glCopyNamedBufferSubData(input.id, voxelSSBO.id, 0, 0, input.size);
 
+	BindSSBO(voxelSSBO);
+	BindSSBO(chunkSSBO);
+	BindSSBO(emptyChunkSSBO);
+
 	UpdateSubChunks();
 }
 
