@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # ---- Main output ----
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC
     src/VoxelRenderer.cpp
 )
 
