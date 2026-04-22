@@ -32,13 +32,13 @@ void VoxelRenderer::InitShaders()
 
 	SetSubChunksShader = ComputeShader(SetSubChunks_comp, fromFile);
 
-	SetSubChunksShader.use();
+	SetSubChunksShader.Bind();
 	SetSubChunksShader.setiVec3("VoxelCountPerChunk", chunkDimensions);
 	SetSubChunksShader.setiVec3("chunkNum", chunkNum);
 	SetSubChunksShader.setFloat("chunkSize", chunkSize);
 	SetSubChunksShader.setiVec3("chunkSubDivision", chunkSubDivision);
 
-	voxelShader.use();
+	voxelShader.Bind();
 	voxelShader.setUint("chunkNum", (unsigned int)totalChunkNum);
 	voxelShader.setFloat("chunkSize", chunkSize);
 	voxelShader.setiVec3("VoxelCountPerChunk", chunkDimensions);
@@ -48,7 +48,7 @@ void VoxelRenderer::InitShaders()
 
 void VoxelRenderer::InitSettings()
 {
-	voxelShader.use();
+	voxelShader.Bind();
 
 	voxelShader.setBool("u_EnableShadows", ShadowEnabled.getValue());
 	voxelShader.setFloat("u_ShadowDist", ShadowDist.getValue());
@@ -105,7 +105,7 @@ void VoxelRenderer::InitBuffers()
 }
 
 void VoxelRenderer::UpdateSubChunks() {
-	SetSubChunksShader.use();
+	SetSubChunksShader.Bind();
 
 	for (size_t i = 0; i < totalChunkNum; ++i) {
 		uint32_t offsetBytes = static_cast<uint32_t>(i * subDivisionCount  * sizeof(uint32_t));
@@ -118,7 +118,7 @@ void VoxelRenderer::UpdateSubChunks() {
 }
 
 void VoxelRenderer::UpdateSubChunk(uint32_t chunkIndex) {
-	SetSubChunksShader.use();
+	SetSubChunksShader.Bind();
 	uint32_t offsetBytes = static_cast<uint32_t>(chunkIndex * subDivisionCount * sizeof(uint32_t));
 
 	UpdateSSBO(emptyChunkSSBO, filledSubchunks.data(), subDivisionCount * sizeof(uint32_t), offsetBytes);
@@ -248,7 +248,7 @@ void VoxelRenderer::Draw(const Camera& camera, Renderer& renderer)
 	BindSSBO(chunkSSBO);
 	BindSSBO(emptyChunkSSBO);
 
-	voxelShader.use();
+	voxelShader.Bind();
 	voxelShader.setVec3("uOrigin", camera.getPosition());
 	voxelShader.setVec3("uRight", camera.getRight());
 	voxelShader.setVec3("uUp", camera.getUp());
@@ -274,13 +274,13 @@ void VoxelRenderer::Draw(const Camera& camera, Renderer& renderer)
 
 	// Draw Voxels To Quad
 	{
-		voxelFrameBuffer.BindFrameBuffer();
+		voxelFrameBuffer.Bind();
 
 		renderer.ClearBuffers();
 
 		FrameOutput.Draw(&voxelShader);
 
-		voxelFrameBuffer.UnBindFrameBuffer();
+		voxelFrameBuffer.Unbind();
 	}
 
 	// Bloom
@@ -289,13 +289,13 @@ void VoxelRenderer::Draw(const Camera& camera, Renderer& renderer)
 		bool first_iteration = true;
 		unsigned int textureID = voxelFrameBuffer.getAttachment(FrameBufferAttachments::COLOR, 1)->id;
 		int amount = 10;
-		blurShader.use();
+		blurShader.Bind();
 
 		blurShader.setInt("image", 0);
 
 		for (int i = 0; i < amount; i++)
 		{
-			pingpongFBO[horizontalBloomPass].BindFrameBuffer();
+			pingpongFBO[horizontalBloomPass].Bind();
 
 			renderer.ClearBuffers();
 
@@ -312,10 +312,10 @@ void VoxelRenderer::Draw(const Camera& camera, Renderer& renderer)
 			horizontalBloomPass = !horizontalBloomPass;
 			if (first_iteration) first_iteration = false;
 		}
-		pingpongFBO[static_cast<int>(!horizontalBloomPass)].UnBindFrameBuffer();
+		pingpongFBO[static_cast<int>(!horizontalBloomPass)].Bind();
 	}
 
-	PostProcessingShader.use();
+	PostProcessingShader.Bind();
 	PostProcessingShader.setFloat("near", camera.getZNearAndZFar().x);
 	PostProcessingShader.setFloat("far", camera.getZNearAndZFar().y);
 	PostProcessingShader.setFloat("editRadius", 0.0f);
@@ -351,10 +351,10 @@ void Lexvi::Extensions::VoxelRenderer::VoxelRenderer::OnResize(unsigned int widt
 		pingpongFBO[i].ResizeFrameBuffer(width, height);
 	}
 
-	voxelShader.use();
+	voxelShader.Bind();
 	voxelShader.setVec2("uResolution", (float)width, (float)height);
 
-	PostProcessingShader.use();
+	PostProcessingShader.Bind();
 	PostProcessingShader.setVec2("uResolution", (float)width, (float)height);
 }
 
